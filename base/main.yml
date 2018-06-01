@@ -1,0 +1,8 @@
+---
+- hosts: all
+
+- import_playbook : deb.yml
+  when: ansible_os_family == "Debian"
+
+- import_playbook: rh.yml
+  when: ansible_os_family == "RedHat"

@@ -1,0 +1,32 @@
+---
+- hosts: all
+  become: yes
+
+  pre_tasks:
+    - name: Update installed packages to the latest versions
+      apt:
+        update_cache: yes
+        cache_valid_time: 3600
+        upgrade: dist
+
+  tasks:
+    - name: Install base set of software
+      apt: name={{ item }} state=present
+      with_items:
+        - vim
+        - curl
+        - wget
+        - htop
+        - bc
+        - sysstat
+        - procps
+        - vnstat
+        - ntp
+
+    - name: Get current editor
+      shell: "update-alternatives --query editor | grep 'Value' | cut -d' ' -f2"
+      register: current_editor
+
+    - name: Set default editor to vim
+      command: "update-alternatives --set editor /usr/bin/vim.basic"
+      when: current_editor.stdout != "/usr/bin/vim.basic"
